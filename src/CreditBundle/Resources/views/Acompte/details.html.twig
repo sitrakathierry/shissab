@@ -1,0 +1,260 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+{{ parent() }}
+<style type="text/css">
+    .select2-container {
+        width: 100% !important;
+    }
+
+    .select2-container--bootstrap4 .select2-selection--single {
+        height: calc(3rem + 3.5px) !important;
+    }
+
+    .ibox-title {
+        overflow: hidden;
+    }
+
+    .float-right {
+        float: right;
+    }
+
+    .history_back {
+        padding: 5px 30px;
+    }
+</style>
+{% endblock %}
+{% block scripts %}
+{{ parent() }} 
+<script src="{{ asset('js/plugins/select2/select2.full.min.js') }}"></script>
+<script src="{{ asset('bundles/credit/js/detail_acompte.js') }}"></script>
+{% endblock %}
+{% block contenu %}
+<div class="wrapper wrapper-content">
+    {# {% if permissions.facture.create %} #}
+    <input type="hidden" id="statut" value="{{ 'credit.statut' }}">
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <button type="button" class="float-right history_back btn btn-success"
+                        onclick="history.back()"><b><i class="fa fa-arrow-left" aria-hidden="true"></i></b></button>
+                    <h5>
+                        Paiement Facture Sous Acompte N° <span class="badge-warning">{{ sousACT.num_fact }}</span>
+                    </h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="form-horizontal" id="form-commande">
+
+                        <input type="hidden" name="id" id="id" value="{{ sousACT.id }}">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group client_mac">
+                                    <label class="col-sm-2 control-label">CLIENT</label>
+                                    <div class="col-sm-10">
+
+                                        {# {% if credit.client.statut == 1%} #}
+                                        {# <input type="text" class="form-control"
+                                            value="{{'credit.client.idClientMorale.nomSociete'}}" disabled="">
+                                        {% else %} #}
+                                        <input type="text" class="form-control"
+                                            value="{{ sousACT.client }}" disabled="">
+                                        {# {% endif %} #}
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                        <div class="hr-line-dashed"></div>
+                        <table class="table table-bordered" id="table-commande-add">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>TYPE FACTURE</th>
+                                    <th>DESIGNATION</th>
+                                    <th>QTÉ</th>
+                                    <th>PRIX</th>
+                                    <th scope="col">REMISE</th>
+                                    <th>MONTANT TOTAL</th>
+                                </tr>
+                            </thead>
+                            <tbody id="principal">
+                                {% set totalProduit = 0 %}
+                                {% set montantRemise = 0 %}
+                                {% set totalPartiel = 0 %}
+                                {% set i = 0 %}
+                                {% for detail in details %} 
+                                <tr>
+                                    <td>
+                                        <div class="form-group">
+                                            <div class="col-sm-12">
+                                            PROFORMA
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <div class="col-sm-12">
+                                                {{ detail.nom }}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="soustable">
+                                        {{ detail.qte }}
+                                    </td>
+                                    <td>
+                                        {{ detail.prix }}
+                                    </td>
+                                    <td>
+                                        {{ detail.montant_remise ~ " " ~ detail.type_remise }}
+                                    </td>
+                                    <td class="td-montant">
+                                        {% set montant = detail.qte * detail.prix %}
+                                        {{ montant|round }}
+                                    </td>
+                                </tr>
+                                    {% set totalProduit = totalProduit + montant %}
+                                    {% set montantRemise = montantRemise + detail.montant_remise %}
+                                {% set i = i + 1 %}
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="5">TOTAL</th>
+                                    <th>
+                                        {{ totalProduit|round }}
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th colspan="5">REMISE</th>
+                                    <th>
+                                        {{ montantRemise }}
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th colspan="5">TTC</th>
+                                    <th>
+                                        {% set totalPartiel = totalProduit + montantRemise %}
+                                        {{ totalPartiel }}
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <div class="hr-line-dashed"></div>
+                        {# <p>Arrêté la présente facture à la somme de <b id="lettre" style="text-transform: uppercase;">{{
+                               ' credit.lettre' }}</b> #}
+                        <p>
+                        <div class="hr-line-dashed"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Date dépot</th>
+                                        <th>Montant déposé</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {% set total_paye = 0 %}
+                                    {% for depot in depotFacture %}
+                                    <tr>
+                                        <td>
+                                            <div class="form-group">
+                                                <div class="col-sm-12">
+                                                    <input type="date" class="form-control"
+                                                        value="{{ depot.Date}}" disabled="">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <div class="col-sm-12">
+                                                    <input type="number" class="form-control"
+                                                        value="{{ depot.Montant }}" disabled="">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {# <button class="btn btn-primary btn-full-width" id="btn-valider">
+                                                <i class="fa fa-check"></i>
+                                                VALIDER
+                                            </button> #}
+                                        </td>
+                                    </tr>
+                                    {% set total_paye = total_paye + depot.Montant %}
+                                    {% endfor %}
+
+                                    {% if total_paye < totalPartiel %}
+                                    <form action="{{path('acompte_enregistre')}}" method="POST">
+                                    <tr>
+                                        <td>
+                                            <div class="form-group">
+                                                <div class="col-sm-12">
+                                                    <input type="date" class="form-control date_depot" name="date_depot">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                                <div class="col-sm-12">
+                                                    <input type="number" class="form-control montant_depot" name="montant_depot" >
+                                                    <input type="hidden" value="{{sousACT.id}}" name="idFacture">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button type="submit" class="btn btn-primary btn-full-width"  id="btn-valider">
+                                                <i class="fa fa-check"></i>
+                                                VALIDER
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </form>
+                                    {% endif %}
+
+                                </tbody>
+
+                                <tfoot>
+                                    <tr>
+                                        <th>TOTAL PAYÉ</th>
+                                        <th>{{ total_paye }}</th>
+                                    </tr>
+                                    <tr>
+                                        <th>TOTAL RESTANT</th>
+                                        <th>{{ totalPartiel - total_paye }}</th>
+                                    </tr>
+                                </tfoot>
+
+                            </table>
+                            <div class="text-right" style="width : 100%">
+                                <button class="btn btn-success depot_print" value="{{sousACT.id}}" > <i class="fa fa-print"></i>&nbsp;Imprimer</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    {# {% else %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <h1 style="text-align: center;">
+                        <i class="fa fa-lock"></i>
+                        ACTION NON PERMIS
+                    </h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %} #}
+</div>
+{% endblock %}

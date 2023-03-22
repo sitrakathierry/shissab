@@ -1,0 +1,221 @@
+<style type="text/css">
+	table.content-details {
+		width: 100% border-collapse: collapse;
+	}
+
+	.content-details th {
+		border: solid 1px #000000;
+		padding: 5px;
+	}
+
+	.text-center {
+		text-align: center;
+	}
+
+	.content-details td {
+		border: solid 1px #c0c0c0;
+		padding: 5px;
+	}
+
+	.text-right {
+		text-align: right;
+	}
+
+	table {
+		font-size: 12pt;
+		font-family: times;
+	}
+
+	pre {
+		font-family: times;
+	}
+
+	td p {
+		width: 20%;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	p {
+		word-wrap: break-word;
+	}
+
+	table {
+		border-collapse: collapse;
+	}
+
+	.f10 {
+		font-size: 10pt;
+	}
+
+	.f14 {
+		font-size: 14pt;
+	}
+
+	.f20 {
+		font-size: 20pt;
+	}
+
+	.no-margin {
+		margin: 0;
+	}
+
+	.no-padding {
+		padding: 0;
+	}
+
+	.b {
+		font-weight: bold;
+	}
+
+	h2 {
+		font-size: 15pt;
+	}
+
+	p {
+		margin: 0;
+		padding: 0;
+	}
+
+	.bordered {
+		border: 1px solid #000;
+	}
+
+	h3 {
+		font-size: 14pt;
+	}
+
+	.th,
+	.tf {
+		font-weight: bold;
+		text-transform: uppercase;
+	}
+
+	.th {
+		text-align: center;
+		background-color: #c0c0c0;
+	}
+</style>
+
+<page backtop="" backbottom="" backleft="5mm" backright="5mm">
+	{% include('PdfBundle:Default:entete.html.twig') %}
+
+	<table style="width:100%">
+		<tr>
+			<td class="text-center" style="width:100%">
+
+				<h3>
+					<u>
+						FICHE DE CREDIT N°
+						{{ credit.recu }}
+					</u>
+				</h3>
+			</td>
+		</tr>
+
+	</table>
+
+	<table style="width:100%; margin-top: 20px">
+		<tr>
+			<td style="width:50%">
+				<b></b>
+			</td>
+			<td style="width:10%">
+				<b>Client</b>
+			</td>
+			<td style="width:40%; text-transform: uppercase;" class="dashed typo">
+
+				{% if credit.client.statut == 1 %}
+					:
+					{{credit.client.idClientMorale.nomSociete}}
+				{% else %}
+					:
+					{{credit.client.idClientPhysique.nom}}
+				{% endif %}
+			</td>
+		</tr>
+		<tr>
+			<td style="width:50%">
+				<b></b>
+			</td>
+			<td style="width:10%">
+				<b>Adresse</b>
+			</td>
+			<td style="width:40%; text-transform: uppercase;" class="dashed typo">
+
+				{% if credit.client.statut == 1 %}
+					:
+					{{credit.client.idClientMorale.adresse}}
+				{% else %}
+					:
+					{{credit.client.idClientPhysique.adresse}}
+				{% endif %}
+			</td>
+		</tr>
+
+	</table>
+
+	<table style="width: 100%; border: solid 1px #000;margin-top:25px">
+		<tr>
+			<td class="th" style="width: 50%; border: solid 1px #000000;">DATE PAIEMENT</td>
+			<td class="th" style="width: 50%; border: solid 1px #000000;">MONTANT PAYEE</td>
+		</tr>
+        {% set total_payee = 0 %}
+		{% for detail in details %}
+			<tr>
+				<td class="text-right" style="width: 50%; border: solid 1px #000000;">
+					{{detail.date | date('Y-m-d')}}
+				</td>
+				<td class="text-right" style="width: 50%; border: solid 1px #000000;">
+					{{detail.montant | round }}
+				</td>
+			</tr>
+            {% set total_payee = total_payee + detail.montant%}
+		{% endfor %}
+
+		<tr>
+			<td class="tf" style="width: 50%; border: solid 1px #000000;">TOTAL PAYEE</td>
+			<td class="tf text-right" style="width: 50%; border: solid 1px #000000;">{{total_payee}}</td>
+		</tr>
+		<tr>
+			<td class="tf" style="width: 50%; border: solid 1px #000000;text-align: left;">TOTAL RESTANT</td>
+			<td class="tf text-right" style="width: 50%; border: solid 1px #000000;">{{credit.total - total_payee}}</td>
+		</tr>
+
+	</table>
+
+	<table style="width:100%; margin-top: 50px">
+		{# <tr>
+			<td style="width:100%">
+				Arrêté la présente facture à la somme de
+				<span id="somme" class="typo b" style="text-transform: uppercase;">{{credit.lettre}}</span>
+			</td>
+		</tr> #}
+		<tr>
+			<td style="width: 100%" class="text-center dashed typo text-right">
+				<br>
+				<br>
+				<br>
+				{{ credit.lieu }}
+				Le
+				{{credit.date| date('d/m/Y')}}
+			</td>
+		</tr>
+	</table>
+
+	<table style="width:100%; margin-top: 20px">
+		<tr>
+			<td style="width:20%" class="text-center f10">
+				LE CLIENT
+			</td>
+			<td style="width:60%"></td>
+			<td style="width:20%" class="text-center f10">
+				POUR LA SOCIETE
+			</td>
+		</tr>
+	</table>
+
+
+</page>

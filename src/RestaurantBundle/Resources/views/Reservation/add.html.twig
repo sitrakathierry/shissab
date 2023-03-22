@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/plugins/jqGrid/ui.jqgrid.css') }}">
+    <link rel="stylesheet" href="{{ asset('bundles/restaurant/css/style.css') }}">
+ {% endblock  %}
+{% block scripts %}
+{{ parent() }}
+<script src="{{ asset('js/plugins/jqGrid/jquery.jqGrid.min.js') }}"></script>
+<script src="{{ asset('js/plugins/select2/select2.full.min.js') }}"></script>
+<script src="{{ asset('bundles/restaurant/js/reservation/add.js') }}"></script>
+{% endblock %}
+
+{% block contenu %}
+    <input type="hidden" id="place_disponible" value="">
+    <input type="hidden" id="id-row" value="">
+    <div class="wrapper wrapper-content">
+        <div class="row">
+        	<div class="col-lg-12">
+                <div class="ibox float-e-margins container-fluid  creation_commande">
+                    <div class="row">
+                        {% for table in tables %}
+                        {# table_libre #}
+                        {# table_occupee #}
+                        {% set barre = "" %}
+                        {% if table.disponibilite == 0 %}
+                            {% set barre = "table_desactivee" %}
+                        {% else %}
+                            {% if table.statut == 1 %}
+                                {% set barre = "table_libre" %}
+                            {% else %}
+                                {% set barre = "table_occupee" %}
+                            {% endif %}
+                        {% endif %}
+                            <div class="col-md-2">
+                                <a href="{{ path('restaurant_resevation_table',{'idtable':table.id}) }}">
+                                    <div class="block_table text-center">
+                                        <div class="c_status {{ barre }}"></div>
+                                        <div class="block_elem">
+                                            <h3>Table {{table.nom}}  </h3>
+                                            <p>Pour <span class="badge badge-success">{{table.place}}</span> personnes</p> 
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
